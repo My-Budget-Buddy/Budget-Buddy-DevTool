@@ -13,7 +13,7 @@ const exec = util.promisify(child_process.exec);
 
 const databaseRootUrl = "jdbc:postgresql://host.docker.internal:5432";
 const databaseUsername = "postgres";
-const databasePassword = "postgres";
+const databasePassword = "password";
 const eurekaUrl = "http://host.docker.internal:8761/eureka";
 const frontendUrl = "http://host.docker.internal:5176";
 

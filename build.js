@@ -8,7 +8,7 @@
 const util = require("util");
 const child_process = require("child_process");
 const fs = require("fs");
-const { chdir, argv } = require("process");
+const { cwd, chdir, argv } = require("process");
 
 const exec = util.promisify(child_process.exec);
 const rm = util.promisify(fs.rm);
@@ -19,17 +19,16 @@ const writeFile = util.promisify(fs.writeFile);
 /* Gets repository name from URL or command
  */
 const getRepositoryName = repository => {
-    const tokens = repository.split("/");
+    const tokens = repository.url.split("/");
     return tokens[tokens.length - 1];
-}
+};
 
 /* Function for cloning all repositories in repositories array
  */
 const cloneRepositories = async repositories => {
-    const gitCommands = repositories.map(repo => "git clone " + repo);
-
-    for (const command of gitCommands) {
-        console.log(`Cloning ${getRepositoryName(command)}...`);
+    for (const repository of repositories) {
+        const command = `git clone -b ${repository.branch} ${repository.url}`;
+        console.log(`Cloning ${getRepositoryName(repository)}...`);
         await exec(command);
     }
 };
@@ -52,13 +51,13 @@ const removeRepositories = async repositories => {
 /* Builds all backend projects
  */
 const buildBackendRepositories = async backendRepositories => {
-    const directories = backendRepositories.map(getRepositoryName);
-
-    for (const directory of directories) {
-        console.log(`Packaging ${directory}...`);
-        chdir(directory);
+    for (const repository of backendRepositories) {
+        const directoryName = getRepositoryName(repository);
+        const oldDirectory = cwd();
+        console.log(`Packaging ${directoryName}...`);
+        chdir(directoryName + repository.rootDirectory);
         await exec("mvn package -DskipTests");
-        chdir("..");
+        chdir(oldDirectory);
     }
 };
 
@@ -75,11 +74,11 @@ const containerizeBackendRepositories = async backendRepositories => {
         "budget-buddy-discoveryservice": 8761,
     };
 
-    const directories = backendRepositories.map(getRepositoryName);
-
-    for (const directory of directories) {
+    for (const repository of backendRepositories) {
+        const directory = getRepositoryName(repository);
+        const oldDirectory = cwd();
         console.log(`Containerizing ${directory}...`);
-        chdir(directory);
+        chdir(directory + repository.rootDirectory);
         const files = await readdir(".");
         if (!files.includes("Dockerfile")) {
             const targetFiles = await readdir("target");
@@ -94,24 +93,48 @@ CMD ["java", "-jar", "app.jar"]
 `);
         }
         await exec(`docker build -t ${directory.toLowerCase()} .`);
-        chdir("..");
+        chdir(oldDirectory);
     }
 };
 
 
-const frontendRepository = "https://github.com/My-Budget-Buddy/Budget-Buddy-Frontend";
-
-const backendRepositories = [
-    "https://github.com/My-Budget-Buddy/Budget-Buddy-AccountService",
-    //"https://github.com/My-Budget-Buddy/Budget-Buddy-BudgetService",
-    "https://github.com/My-Budget-Buddy/Budget-Buddy-TaxService",
-    "https://github.com/My-Budget-Buddy/Budget-Buddy-UserService",
-    "https://github.com/My-Budget-Buddy/Budget-Buddy-TransactionService",
-    "https://github.com/My-Budget-Buddy/Budget-Buddy-GatewayService",
-    "https://github.com/My-Budget-Buddy/Budget-Buddy-DiscoveryService",
+const repositories = [
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-AccountService",
+        branch: "main",
+        rootDirectory: "",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-BudgetService",
+        branch: "develop",
+        rootDirectory: "/budget-service",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-TaxService",
+        branch: "main",
+        rootDirectory: "",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-UserService",
+        branch: "main",
+        rootDirectory: "",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-TransactionService",
+        branch: "main",
+        rootDirectory: "",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-GatewayService",
+        branch: "main",
+        rootDirectory: "",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-DiscoveryService",
+        branch: "main",
+        rootDirectory: "",
+    },
 ];
-
-const repositories = backendRepositories.concat([frontendRepository]);
 
 const main = async () => {
     if (argv.length > 2 && argv[2] === "clean") {
@@ -125,9 +148,9 @@ const main = async () => {
         await cloneRepositories(repositories);
         console.log();
     }
-    await buildBackendRepositories(backendRepositories);
+    await buildBackendRepositories(repositories);
     console.log();
-    await containerizeBackendRepositories(backendRepositories);
+    await containerizeBackendRepositories(repositories);
 };
 
 main();

@@ -20,6 +20,22 @@ const frontendUrl = "http://host.docker.internal:5176";
 
 const images = [
     {
+        name: "budget-buddy-discoveryservice",
+        innerPort: 8761,
+        outerPort: 8761,
+        environmentVariables: {
+        },
+    },
+    {
+        name: "budget-buddy-gatewayservice",
+        innerPort: 8125,
+        outerPort: 8125,
+        environmentVariables: {
+            "FRONTEND_URL": frontendUrl,
+            "EUREKA_URL": eurekaUrl,
+        },
+    },
+    {
         name: "budget-buddy-accountservice",
         innerPort: 8080,
         outerPort: 8080,
@@ -30,17 +46,28 @@ const images = [
             "EUREKA_URL": eurekaUrl,
         },
     },
-    // {
-    //     name: "budget-buddy-budgetservice",
-    //     innerPort: 8080,
-    //     outerPort: 8082,
-    //     environmentVariables: {
-    //         "DATABASE_URL": databaseRootUrl + "/budgets",
-    //         "DATABASE_USERNAME": databaseUsername,
-    //         "DATABASE_PASSWORD": databasePassword,
-    //         "EUREKA_URL": eurekaUrl,
-    //     },
-    // },
+    {
+        name: "budget-buddy-authservice",
+        innerPort: 8888,
+        outerPort: 8888,
+        environmentVariables: {
+            "PG_DB_URL": databaseRootUrl,
+            "PG_DB_USER": databaseUsername,
+            "PG_DB_PW": databasePassword,
+            "EUREKA_URL": eurekaUrl,
+        },
+    },
+    {
+        name: "budget-buddy-budgetservice",
+        innerPort: 8080,
+        outerPort: 8082,
+        environmentVariables: {
+            "DATABASE_URL": databaseRootUrl + "/budgets",
+            "DATABASE_USERNAME": databaseUsername,
+            "DATABASE_PASSWORD": databasePassword,
+            "EUREKA_URL": eurekaUrl,
+        },
+    },
     {
         name: "budget-buddy-taxservice",
         innerPort: 8084,
@@ -72,22 +99,6 @@ const images = [
             "DATABASE_USER": databaseUsername,
             "DATABASE_PASS": databasePassword,
             "EUREKA_URL": eurekaUrl,
-        },
-    },
-    {
-        name: "budget-buddy-gatewayservice",
-        innerPort: 8125,
-        outerPort: 8125,
-        environmentVariables: {
-            "FRONTEND_URL": frontendUrl,
-            "EUREKA_URL": eurekaUrl,
-        },
-    },
-    {
-        name: "budget-buddy-discoveryservice",
-        innerPort: 8761,
-        outerPort: 8761,
-        environmentVariables: {
         },
     },
 ];

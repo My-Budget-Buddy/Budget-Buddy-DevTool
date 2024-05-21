@@ -66,6 +66,7 @@ const buildBackendRepositories = async backendRepositories => {
 const containerizeBackendRepositories = async backendRepositories => {
     const portsTable = {
         "budget-buddy-accountservice": 8080,
+        "budget-buddy-authservice": 8888,
         "budget-buddy-budgetservice": 8080,
         "budget-buddy-taxservice": 8084,
         "budget-buddy-userservice": 8081,
@@ -100,6 +101,11 @@ CMD ["java", "-jar", "app.jar"]
 const repositories = [
     {
         url: "https://github.com/My-Budget-Buddy/Budget-Buddy-AccountService",
+        branch: "main",
+        rootDirectory: "",
+    },
+    {
+        url: "https://github.com/My-Budget-Buddy/Budget-Buddy-AuthService",
         branch: "main",
         rootDirectory: "",
     },

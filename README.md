@@ -25,3 +25,14 @@ To run all docker images built by build.js at the same time with the right order
 To kill all docker containers run:
 
     docker kill $(docker ps -q)
+
+Troubleshooting
+---------------
+
+Sometimes the scripts cannot find maven in your path (In other words, the script fails when packaging the services). In that case, on Windows, assuming chocolatey is installed (node probably installed it for you), you can open a terminal as administrator and run the following command:
+
+    choco install maven
+
+On macOS, the same should work for homebrew:
+
+    brew install maven

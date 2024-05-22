@@ -21,3 +21,7 @@ To remove all old repositories in your directory, run:
 To run all docker images built by build.js at the same time with the right order and environment variables, run:
 
     node run.js
+
+To kill all docker containers run:
+
+    docker kill $(docker ps -q)

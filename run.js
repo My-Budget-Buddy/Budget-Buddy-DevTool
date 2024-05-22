@@ -11,7 +11,9 @@ const child_process = require("child_process");
 const exec = util.promisify(child_process.exec);
 
 
-const databaseRootUrl = "jdbc:postgresql://host.docker.internal:5432";
+const databasePort = 5555;
+const databaseRootUrl = `jdbc:postgresql://host.docker.internal:${databasePort}`;
+const databaseUrl = databaseRootUrl + "/budgetbuddy";
 const databaseUsername = "postgres";
 const databasePassword = "password";
 const eurekaUrl = "http://host.docker.internal:8761/eureka";
@@ -19,6 +21,16 @@ const frontendUrl = "http://host.docker.internal:5176";
 
 
 const images = [
+    {
+        name: "budget-buddy-database",
+        innerPort: 5432,
+        outerPort: databasePort,
+        environmentVariables: {
+            "POSTGRES_USER": databaseUsername,
+            "POSTGRES_PASSWORD": databasePassword,
+            "POSTGRES_DB": "budgetbuddy",
+        },
+    },
     {
         name: "budget-buddy-discoveryservice",
         innerPort: 8761,
@@ -40,7 +52,7 @@ const images = [
         innerPort: 8080,
         outerPort: 8080,
         environmentVariables: {
-            "DATABASE_URL": databaseRootUrl + "/accounts",
+            "DATABASE_URL": databaseUrl,
             "DATABASE_USERNAME": databaseUsername,
             "DATABASE_PASSWORD": databasePassword,
             "EUREKA_URL": eurekaUrl,
@@ -51,9 +63,9 @@ const images = [
         innerPort: 8888,
         outerPort: 8888,
         environmentVariables: {
-            "PG_DB_URL": databaseRootUrl,
-            "PG_DB_USER": databaseUsername,
-            "PG_DB_PW": databasePassword,
+            "DATABASE_URL": databaseUrl,
+            "DATABASE_USER": databaseUsername,
+            "DATABASE_PASS": databasePassword,
             "EUREKA_URL": eurekaUrl,
         },
     },
@@ -62,7 +74,7 @@ const images = [
         innerPort: 8080,
         outerPort: 8082,
         environmentVariables: {
-            "DATABASE_URL": databaseRootUrl + "/budgets",
+            "DATABASE_URL": databaseUrl,
             "DATABASE_USERNAME": databaseUsername,
             "DATABASE_PASSWORD": databasePassword,
             "EUREKA_URL": eurekaUrl,
@@ -73,7 +85,7 @@ const images = [
         innerPort: 8084,
         outerPort: 8084,
         environmentVariables: {
-            "DATABASE_URL": databaseRootUrl + "/tax-service",
+            "DATABASE_URL": databaseUrl,
             "DATABASE_USER": databaseUsername,
             "DATABASE_PASS": databasePassword,
             "EUREKA_URL": eurekaUrl,
@@ -84,7 +96,7 @@ const images = [
         innerPort: 8081,
         outerPort: 8081,
         environmentVariables: {
-            "DATABASE_URL": databaseRootUrl + "/budget-buddy-users",
+            "DATABASE_URL": databaseUrl,
             "DATABASE_USERNAME": databaseUsername,
             "DATABASE_PASSWORD": databasePassword,
             "EUREKA_URL": eurekaUrl,
@@ -95,7 +107,7 @@ const images = [
         innerPort: 8083,
         outerPort: 8083,
         environmentVariables: {
-            "DATABASE_URL": databaseRootUrl + "/test_transaction",
+            "DATABASE_URL": databaseUrl,
             "DATABASE_USER": databaseUsername,
             "DATABASE_PASS": databasePassword,
             "EUREKA_URL": eurekaUrl,

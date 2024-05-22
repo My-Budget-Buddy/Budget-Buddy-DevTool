@@ -97,6 +97,13 @@ CMD ["java", "-jar", "app.jar"]
     }
 };
 
+/* Containerize database
+ */
+const containerizeDatabase = async () => {
+    console.log("Containerizing database...");
+    await exec("docker build -t budget-buddy-database .");
+};
+
 
 const repositories = [
     {
@@ -156,6 +163,8 @@ const main = async () => {
     await buildBackendRepositories(repositories);
     console.log();
     await containerizeBackendRepositories(repositories);
+    console.log();
+    await containerizeDatabase();
 };
 
 main();

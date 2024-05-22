@@ -2,6 +2,8 @@
 Budget Buddy Dev Tool
 =====================
 
+__DEPRECATED__: Use [buddy](https://github.com/My-Budget-Buddy/buddy) instead!
+
 This is a simple tool meant to make local development easier. It downloads all repositories, builds them, and containerizes them for you, rather than having to do all that work manually. It also can start up all of the services in the correct order with the correct environment variables.
 
 It requires node, git, docker, and maven to run. Make sure that docker is running while you are using these scripts.

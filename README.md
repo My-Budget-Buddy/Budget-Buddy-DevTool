@@ -36,3 +36,20 @@ Sometimes the scripts cannot find maven in your path (In other words, the script
 On macOS, the same should work for homebrew:
 
     brew install maven
+
+Saving Memory
+-------------
+
+The run script starts up many docker containers, and this can be a big problem for those with only 8 GB of memory. One way to solve this problem is to stop services from running that you do not need to simulate. You can do this by commenting out the services in run.js's images array, like this:
+
+    // {
+    //     name: "budget-buddy-authservice",
+    //     innerPort: 8888,
+    //     outerPort: 8888,
+    //     environmentVariables: {
+    //         "DATABASE_URL": databaseUrl,
+    //         "DATABASE_USER": databaseUsername,
+    //         "DATABASE_PASS": databasePassword,
+    //         "EUREKA_URL": eurekaUrl,
+    //     },
+    // },
